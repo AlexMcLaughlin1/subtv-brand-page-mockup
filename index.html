@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=390, initial-scale=1.0">
+<title>Adidas Brand Page</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0C0D13;
+    --card-bg: #16181F;
+    --coral: #FF4D7A;
+    --orange: #FF8C42;
+    --blue: #1E9BF0;
+    --green: #4ADE80;
+    --white: #FFFFFF;
+    --muted: rgba(255,255,255,0.45);
+    --subtle: rgba(255,255,255,0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Barlow', sans-serif;
+    background: #080810;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 32px 0 60px;
+  }
+
+  /* ── Phone shell — iPhone 16 Pro proportions (393 × 852) ── */
+  .phone {
+    width: 393px;
+    height: 852px;
+    background: var(--bg);
+    border-radius: 50px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.06),
+      0 40px 80px rgba(0,0,0,0.8),
+      0 0 0 8px rgba(255,255,255,0.04);
+  }
+
+  /* ══════════════════════════════════════════
+     HERO — fixed background layer, never moves
+  ══════════════════════════════════════════ */
+  .hero {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 400px;
+    overflow: hidden;
+    z-index: 0;
+  }
+
+  .hero-img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    object-position: center 20%;
+    filter: brightness(0.45) saturate(0.85);
+    display: block;
+  }
+
+  .hero-fade {
+    position: absolute; inset: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.05) 0%, transparent 40%, var(--bg) 100%);
+  }
+
+  /* Logo card — centred in hero */
+  .logo-card-wrap {
+    position: absolute;
+    top: 55%; left: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .logo-card {
+    width: 168px; height: 168px;
+    background: white;
+    border-radius: 36px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.12);
+  }
+
+  .logo-card img {
+    width: 122px; height: 122px;
+    object-fit: contain;
+    mix-blend-mode: multiply;
+  }
+
+  /* Rate badge — OUTSIDE and overlapping logo card */
+  .rate-badge {
+    position: absolute;
+    top: -13px;
+    right: -13px;
+    background: white;
+    border-radius: 10px;
+    padding: 4px 9px;
+    text-align: right;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    line-height: 1.15;
+    z-index: 5; /* floats over background image */
+  }
+
+  .rate-new { display: block; font-size: 15px; font-weight: 900; color: var(--coral); }
+  .rate-old { display: block; font-size: 12px; font-weight: 700; color: #bbb; text-decoration: line-through; }
+
+  /* ══════════════════════════════════════════
+     STATUS BAR + NAV — absolute over hero
+  ══════════════════════════════════════════ */
+  .status-bar {
+    position: absolute; top: 0; left: 0; right: 0;
+    z-index: 20;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 24px 6px;
+    font-size: 13px; font-weight: 700; color: var(--white);
+    /* subtle gradient so text stays readable over image */
+    background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, transparent 100%);
+  }
+
+  .status-right { display: flex; align-items: center; gap: 6px; }
+
+  .nav-header {
+    position: absolute; top: 38px; left: 0; right: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px 8px;
+  }
+
+  .nav-icon-btn {
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(8px);
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  .nav-actions { display: flex; gap: 10px; }
+  .nav-title { font-size: 17px; font-weight: 800; letter-spacing: -0.4px; color: white; }
+
+  /* ══════════════════════════════════════════
+     CONTENT
+  ══════════════════════════════════════════ */
+  .content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 0 18px 20px;
+    position: relative;
+    z-index: 2;
+    /* Normal: 270px clears the fixed hero background.
+       Keyboard: slides up to 108px (just below nav) while the
+       hero background stays put behind it. */
+    padding-top: 330px;
+    transition: padding-top 0.35s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .keyboard-open .content {
+    padding-top: 100px;
+  }
+
+  /* Keyboard-up: compact header + gift card sit at the top, CTA pins to
+     the bottom (just above the keyboard) via its margin-top:auto. */
+
+  /* ── Compact header (keyboard open state) ── */
+  .compact-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease;
+    padding: 0;
+  }
+
+  .compact-logo-wrap {
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .compact-logo {
+    width: 66px; height: 66px;
+    background: white;
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+  }
+
+  .compact-logo img {
+    width: 48px; height: 48px;
+    object-fit: contain;
+    mix-blend-mode: multiply;
+  }
+
+  .compact-rate {
+    position: absolute;
+    top: -10px; right: -10px;
+    background: white;
+    border-radius: 9px;
+    padding: 3px 7px;
+    text-align: right;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+    line-height: 1.1;
+  }
+
+  .compact-rate .rate-new { font-size: 15px; font-weight: 900; color: var(--coral); }
+  .compact-rate .rate-old { font-size: 12px; font-weight: 700; color: #bbb; text-decoration: line-through; }
+
+  .compact-headline {
+    font-size: 20px; font-weight: 700;
+    color: var(--white);
+    line-height: 1.3;
+    letter-spacing: -0.3px;
+  }
+
+  /* ── Main headline (normal state) ── */
+  .headline {
+    font-size: 24px; font-weight: 900;
+    text-align: center; line-height: 1.22;
+    margin-bottom: 16px;
+    letter-spacing: -0.6px;
+    color: var(--white);
+    max-height: 100px;
+    opacity: 1;
+    transition: max-height 0.3s ease, opacity 0.2s ease, margin 0.3s ease;
+    overflow: hidden;
+  }
+
+  /* ══════════════════════════════════════════
+     GIFT CARD WIDGET
+  ══════════════════════════════════════════ */
+  .gift-card-widget {
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 16px;
+    box-shadow:
+      0 8px 32px rgba(255,77,122,0.22),
+      0 0 0 1px rgba(255,77,122,0.18);
+  }
+
+  .gc-visual {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(130deg, #FF3D70 0%, #FF7A3D 100%);
+    padding: 14px 18px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.25);
+  }
+
+  .gc-watermark {
+    position: absolute;
+    right: -24px; bottom: -24px;
+    width: 200px; height: 200px;
+    object-fit: contain;
+    filter: invert(1);
+    mix-blend-mode: screen;
+    opacity: 0.1;
+    pointer-events: none;
+  }
+
+  .gc-brand-row {
+    position: relative; z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .gc-brand-left { display: flex; align-items: center; gap: 9px; }
+
+  .gc-logo-chip {
+    width: 32px; height: 32px;
+    background: white;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden; flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+
+  .gc-logo-chip img {
+    width: 24px; height: 24px;
+    object-fit: contain;
+    mix-blend-mode: multiply;
+  }
+
+  .gc-name { font-size: 15px; font-weight: 800; color: white; letter-spacing: -0.3px; }
+
+  .gc-pill {
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 1.4px; text-transform: uppercase;
+    color: rgba(255,255,255,0.75);
+    background: rgba(255,255,255,0.18);
+    padding: 3px 9px; border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.25);
+  }
+
+  /* Combined Gift Card Value + inline input */
+  .gc-value-row {
+    position: relative; z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .gc-value-label {
+    font-size: 14px; font-weight: 600;
+    color: rgba(255,255,255,0.7);
+    flex-shrink: 0;
+  }
+
+  .gc-value-input-wrap {
+    display: flex; align-items: center; gap: 3px;
+    border-bottom: 1.5px solid rgba(255,255,255,0.45);
+    padding-bottom: 3px;
+  }
+
+  .gc-currency {
+    font-size: 17px; font-weight: 800;
+    color: white; line-height: 1;
+  }
+
+  .gc-inline-input {
+    background: transparent; border: none; outline: none;
+    font-family: 'Barlow', sans-serif;
+    font-size: 17px; font-weight: 800;
+    color: white; text-align: right;
+    width: 90px;
+    -moz-appearance: textfield;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .gc-inline-input::-webkit-inner-spin-button,
+  .gc-inline-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+  .gc-inline-input::placeholder { color: rgba(255,255,255,0.35); font-weight: 500; }
+
+  .gc-usage-note {
+    position: relative; z-index: 1;
+    font-size: 11px; font-weight: 600;
+    color: rgba(255,255,255,0.45);
+    letter-spacing: 0.2px;
+    text-align: right;
+    margin-top: -8px;
+  }
+
+  /* Math on card */
+  .gc-math { position: relative; z-index: 1; }
+
+  .gc-stub-divider {
+    border: none;
+    border-top: 1.5px dashed rgba(255,255,255,0.35);
+    margin-bottom: 11px;
+  }
+
+  .gc-empty-hint {
+    display: flex; align-items: center; justify-content: center;
+    gap: 6px; padding: 2px 0 4px;
+    font-size: 12px; color: rgba(255,255,255,0.55); font-weight: 500;
+  }
+  .gc-empty-hint svg { opacity: 0.6; flex-shrink: 0; }
+
+  .gc-math-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 3.5px 0;
+  }
+  .gc-math-label { font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.65); }
+  .gc-math-value { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.95); }
+  .gc-math-value.saving { color: #fff; font-weight: 800; }
+  .gc-divider { height: 1px; background: rgba(255,255,255,0.25); margin: 8px 0; }
+  .gc-math-row.total .gc-math-label { font-size: 14px; font-weight: 800; color: white; }
+  .gc-math-row.total .gc-math-value { font-size: 22px; font-weight: 900; color: white; letter-spacing: -0.8px; }
+
+  /* ── Info links ── */
+  .info-links {
+    display: flex; justify-content: space-around;
+    margin-top: auto;   /* pins the whole bottom group (links + T&Cs + CTA) down together */
+    margin-bottom: 14px;
+  }
+  .info-link {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 13px; font-weight: 700;
+    color: var(--coral); cursor: pointer;
+  }
+
+  /* ── Fine print ── */
+  .fine-print {
+    text-align: center; font-size: 12px;
+    color: var(--muted); line-height: 1.5;
+    margin-bottom: 12px;
+    transition: max-height 0.3s, opacity 0.2s;
+    max-height: 60px; opacity: 1; overflow: hidden;
+  }
+  .fine-print a { color: var(--coral); text-decoration: none; }
+
+  /* ── CTA ── (pinned to bottom; auto margin absorbs slack) ── */
+  .cta-btn {
+    display: block; width: 100%; padding: 18px;
+    background: var(--blue); border: none; border-radius: 18px;
+    font-family: 'Barlow', sans-serif;
+    font-size: 16px; font-weight: 800; color: white;
+    cursor: pointer; text-align: center;
+    transition: max-height 0.3s, opacity 0.2s;
+    max-height: 60px; opacity: 1; overflow: hidden;
+  }
+
+  /* ══════════════════════════════════════════
+     FAKE iOS NUMERIC KEYBOARD
+  ══════════════════════════════════════════ */
+  .fake-keyboard {
+    flex-shrink: 0;
+    background: #1A1B1F;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.38s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .keyboard-done-bar {
+    display: flex;
+    justify-content: flex-end;
+    padding: 8px 16px 4px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .keyboard-done-btn {
+    background: none; border: none;
+    font-family: 'Barlow', sans-serif;
+    font-size: 16px; font-weight: 700;
+    color: var(--blue); cursor: pointer;
+    padding: 4px 8px;
+  }
+
+  .keyboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1px;
+    background: rgba(255,255,255,0.06);
+    padding: 0 0 4px;
+  }
+
+  .key {
+    background: #2A2B30;
+    border: none;
+    font-family: 'Barlow', sans-serif;
+    font-size: 22px;
+    font-weight: 400;
+    color: white;
+    padding: 16px 0;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.1s;
+    user-select: none;
+  }
+
+  .key:active, .key.pressed { background: #3A3B40; }
+
+  .key.special {
+    background: #1E1F24;
+    font-size: 18px;
+  }
+
+  .key.backspace { font-size: 20px; }
+
+  /* ══════════════════════════════════════════
+     KEYBOARD OPEN STATE
+     — triggered when input is focused
+  ══════════════════════════════════════════ */
+
+  /* Hero background STAYS PUT — only the centre logo card hides */
+  .keyboard-open .logo-card-wrap {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+
+  /* Compact header appears */
+  .keyboard-open .compact-header {
+    max-height: 110px;
+    opacity: 1;
+    padding: 14px 0 12px;
+  }
+
+  /* Main headline hides */
+  .keyboard-open .headline {
+    max-height: 0;
+    opacity: 0;
+    margin-bottom: 0;
+  }
+
+  /* Fine print + info links hide to save space; CTA STAYS visible */
+  .keyboard-open .fine-print {
+    max-height: 0;
+    opacity: 0;
+    margin: 0;
+  }
+
+  .keyboard-open .info-links {
+    display: none;
+  }
+
+  /* Info links + fine print are hidden here, so pin the CTA itself
+     just above the keyboard. */
+  .keyboard-open .cta-btn {
+    margin-top: auto;
+    margin-bottom: 4px;
+  }
+
+  /* Keyboard slides up */
+  .keyboard-open .fake-keyboard {
+    max-height: 280px;
+  }
+
+  /* ══════════════════════════════════════════
+     CHECKOUT MODE — gift card to top, sheet up
+  ══════════════════════════════════════════ */
+
+  /* Move the gift card up just below the nav title */
+  .checkout-open .content {
+    padding-top: 100px;
+  }
+
+  /* Everything except the gift card disappears */
+  .checkout-open .logo-card-wrap,
+  .checkout-open .headline,
+  .checkout-open .fine-print,
+  .checkout-open .cta-btn {
+    max-height: 0;
+    opacity: 0;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+  .checkout-open .info-links { display: none; }
+  .checkout-open .gc-usage-note { display: none; }
+
+  /* Dim backdrop above the sheet (gift card still visible through it) */
+  /* Transparent backdrop: only there to capture tap-to-close,
+     so the gift card above the sheet stays fully visible. */
+  .checkout-backdrop {
+    position: absolute;
+    inset: 0;
+    background: transparent;
+    pointer-events: none;
+    z-index: 25;
+  }
+  .checkout-open .checkout-backdrop {
+    pointer-events: auto;
+  }
+
+  /* Bottom sheet */
+  .checkout-sheet {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    z-index: 30;
+    background: #14151B;
+    border-radius: 30px 30px 0 0;
+    padding: 8px 18px 16px;
+    box-shadow: 0 -12px 50px rgba(0,0,0,0.6);
+    transform: translateY(110%);
+    transition: transform 0.42s cubic-bezier(0.4,0,0.2,1);
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+  .checkout-open .checkout-sheet {
+    transform: translateY(0);
+  }
+
+  .sheet-handle {
+    width: 40px; height: 5px;
+    background: rgba(255,255,255,0.25);
+    border-radius: 3px;
+    margin: 0 auto 4px;
+  }
+
+  /* Summary card */
+  .summary-card {
+    background: linear-gradient(125deg, #FF4D7A 0%, #FF8C42 100%);
+    border-radius: 16px;
+    padding: 12px 14px;
+    color: white;
+  }
+  .summary-top {
+    display: flex; align-items: center; gap: 9px;
+    margin-bottom: 8px;
+  }
+  .summary-logo {
+    width: 32px; height: 32px;
+    background: white; border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .summary-logo img { width: 23px; height: 23px; object-fit: contain; mix-blend-mode: multiply; }
+  .summary-title { font-size: 15px; font-weight: 800; letter-spacing: -0.2px; }
+  .summary-title strong { font-weight: 900; }
+
+  .summary-rows { display: flex; flex-direction: column; gap: 2px; }
+  .summary-row {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 13px; font-weight: 600;
+    color: rgba(255,255,255,0.92);
+  }
+  .summary-row.total { font-size: 16px; font-weight: 900; margin-top: 2px; }
+  .summary-row.credit { font-size: 12px; color: rgba(255,255,255,0.8); margin-top: 1px; }
+  .apply-link { font-weight: 800; color: white; text-decoration: underline; cursor: pointer; }
+
+  .pay-heading {
+    font-size: 16px; font-weight: 800; color: white;
+    text-align: center; margin: 2px 0;
+  }
+
+  /* Payment options */
+  .pay-option {
+    position: relative;
+    display: flex; align-items: center; gap: 12px;
+    background: #2A2C34;
+    border: 2px solid transparent;
+    border-radius: 14px;
+    padding: 10px 14px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .pay-option.selected { border-color: var(--blue); }
+
+  .best-tag {
+    position: absolute;
+    top: -10px; right: 14px;
+    background: linear-gradient(120deg, #FF4D7A, #FF8C42);
+    color: white; font-size: 10px; font-weight: 700;
+    padding: 2px 10px; border-radius: 20px;
+  }
+
+  .pay-icon {
+    width: 40px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .pay-icon.gpay {
+    background: white; border-radius: 18px;
+    padding: 4px 8px; width: auto;
+    font-weight: 800; font-size: 14px;
+  }
+  .gpay-g { color: #4285F4; }
+  .gpay-pay { color: #5F6368; }
+
+  .pay-text { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+  .pay-name { font-size: 15px; font-weight: 800; color: white; text-align: center; }
+  .pay-desc { font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.6); text-align: center; line-height: 1.3; }
+
+  .pay-rate {
+    flex-shrink: 0;
+    width: 54px; height: 40px;
+    background: white; border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 900; color: var(--coral);
+  }
+
+  .or-divider {
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(255,255,255,0.4); font-size: 12px; font-weight: 700;
+    margin: -2px 0;
+  }
+  .or-divider::before, .or-divider::after {
+    content: ''; height: 1px; flex: 1;
+    background: rgba(255,255,255,0.12);
+  }
+  .or-divider span { padding: 0 14px; }
+
+  /* Reduction note */
+  .pay-note {
+    display: flex; align-items: flex-start; gap: 9px;
+    padding: 0 2px;
+  }
+  .pay-note-icon {
+    flex-shrink: 0;
+    width: 18px; height: 18px;
+    background: white; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 1px;
+  }
+  .pay-note p {
+    font-size: 12px; font-weight: 600;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.4;
+  }
+
+  .proceed-btn {
+    width: 100%; padding: 15px;
+    background: var(--blue); border: none; border-radius: 16px;
+    font-family: 'Barlow', sans-serif;
+    font-size: 16px; font-weight: 800; color: white;
+    cursor: pointer; margin-top: 2px;
+  }
+</style>
+</head>
+<body>
+<div class="phone" id="phone">
+
+  <!-- ── HERO: full bleed from true top ── -->
+  <div class="hero">
+    <img
+      class="hero-img"
+      src="1780064254679-7309129_-_CAM_DisplayBanner_Static_EU_GC_SUBTV_Perks_Assets_SS26_Email_Full_Width_1.jpg"
+      alt="Adidas"
+    >
+    <div class="hero-fade"></div>
+    <div class="logo-card-wrap">
+      <div class="logo-card">
+        <img src="1757401755269-adidasBG.png" alt="adidas">
+      </div>
+      <!-- Badge is OUTSIDE .logo-card, floats over the background image -->
+      <div class="rate-badge">
+        <span class="rate-new">15%</span>
+        <span class="rate-old">10%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STATUS BAR: absolute over hero ── -->
+  <div class="status-bar">
+    <span>18:01</span>
+    <div class="status-right">
+      <svg width="16" height="10" viewBox="0 0 16 10" fill="none">
+        <rect x="0" y="7" width="2.5" height="3" rx="0.5" fill="white"/>
+        <rect x="3.5" y="5" width="2.5" height="5" rx="0.5" fill="white"/>
+        <rect x="7" y="2.5" width="2.5" height="7.5" rx="0.5" fill="white"/>
+        <rect x="10.5" y="0" width="2.5" height="10" rx="0.5" fill="white"/>
+      </svg>
+      <svg width="15" height="11" viewBox="0 0 15 11" fill="none">
+        <path d="M7.5 2.5C9.3 2.5 10.9 3.3 12 4.5L13.5 3C12 1.1 9.9 0 7.5 0 5.1 0 3 1.1 1.5 3L3 4.5C4.1 3.3 5.7 2.5 7.5 2.5Z" fill="white"/>
+        <path d="M7.5 5.5C8.5 5.5 9.4 5.9 10.1 6.6L11.6 5.1C10.5 4 9.1 3.5 7.5 3.5 5.9 3.5 4.5 4 3.4 5.1L4.9 6.6C5.6 5.9 6.5 5.5 7.5 5.5Z" fill="white"/>
+        <circle cx="7.5" cy="9.5" r="1.5" fill="white"/>
+      </svg>
+      <svg width="26" height="12" viewBox="0 0 26 12" fill="none">
+        <rect x="0.5" y="0.5" width="22" height="11" rx="3.5" stroke="white" stroke-opacity="0.35"/>
+        <rect x="2" y="2" width="17" height="8" rx="2" fill="white"/>
+        <path d="M23.5 4.5V7.5C24.3 7.2 25 6.5 25 6 25 5.5 24.3 4.8 23.5 4.5Z" fill="white" fill-opacity="0.4"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ── NAV HEADER: absolute over hero ── -->
+  <div class="nav-header">
+    <div class="nav-icon-btn">
+      <svg width="10" height="17" viewBox="0 0 10 17" fill="none">
+        <path d="M9 1L2 8.5L9 16" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <span class="nav-title">Boosted Gift Card</span>
+    <div class="nav-actions">
+      <div class="nav-icon-btn">
+        <svg width="16" height="18" viewBox="0 0 16 18" fill="none">
+          <path d="M8 1V12M8 1L5 4M8 1L11 4" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M2 9V15C2 15.6 2.4 16 3 16H13C13.6 16 14 15.6 14 15V9" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="nav-icon-btn">
+        <svg width="18" height="17" viewBox="0 0 18 17" fill="none">
+          <path d="M9 15.5L2.2 8.5C1 7.2 1 5.2 2.2 3.9 3.4 2.6 5.4 2.6 6.6 3.9L9 6.4 11.4 3.9C12.6 2.6 14.6 2.6 15.8 3.9 17 5.2 17 7.2 15.8 8.5L9 15.5Z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PAGE CONTENT ── -->
+  <div class="content">
+
+    <!-- Compact header — hidden normally, shown on keyboard open -->
+    <div class="compact-header" id="compactHeader">
+      <div class="compact-logo-wrap">
+        <div class="compact-logo">
+          <img src="1757401755269-adidasBG.png" alt="adidas">
+        </div>
+        <div class="compact-rate">
+          <span class="rate-new">15%</span>
+          <span class="rate-old">10%</span>
+        </div>
+      </div>
+      <p class="compact-headline">15% off adidas + £5 Perks<br>Credit on first purchase</p>
+    </div>
+
+    <!-- Main headline — normal state -->
+    <h2 class="headline" id="mainHeadline">
+      15% off adidas + £5 Perks Credit<br>on first purchase
+    </h2>
+
+    <!-- Gift Card Widget -->
+    <div class="gift-card-widget">
+      <div class="gc-visual">
+
+        <img class="gc-watermark" src="1757401755269-adidasBG.png" alt="" aria-hidden="true">
+
+        <div class="gc-brand-row">
+          <div class="gc-brand-left">
+            <div class="gc-logo-chip">
+              <img src="1757401755269-adidasBG.png" alt="adidas">
+            </div>
+            <span class="gc-name">adidas Gift Card</span>
+          </div>
+          <span class="gc-pill">Gift Card</span>
+        </div>
+
+        <div class="gc-value-row">
+          <span class="gc-value-label">Gift Card Value</span>
+          <div class="gc-value-input-wrap">
+            <span class="gc-currency">£</span>
+            <input
+              class="gc-inline-input"
+              id="amountInput"
+              type="number"
+              inputmode="decimal"
+              placeholder="0.00"
+              min="1" max="500" step="1"
+              readonly
+              onclick="openKeyboard()"
+            >
+          </div>
+        </div>
+        <p class="gc-usage-note">Use: Online, In-Store</p>
+
+        <div class="gc-math">
+          <hr class="gc-stub-divider">
+          <div class="gc-empty-hint" id="gcEmpty">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16" stroke-width="3"/>
+            </svg>
+            Tap the amount to preview your savings
+          </div>
+          <div id="gcMathRows" style="display:none">
+            <div class="gc-math-row">
+              <span class="gc-math-label" id="mSavingLabel">You Save (15%)</span>
+              <span class="gc-math-value saving" id="mSaving">−£0.00</span>
+            </div>
+            <div class="gc-divider"></div>
+            <div class="gc-math-row total">
+              <span class="gc-math-label">Total to Pay</span>
+              <span class="gc-math-value" id="mTotal">£0.00</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="info-links">
+      <a class="info-link">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+          <line x1="12" y1="17" x2="12.01" y2="17" stroke-width="3"/>
+        </svg>
+        Brand Info
+      </a>
+      <a class="info-link">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16" stroke-width="3"/>
+        </svg>
+        Redemption Instructions
+      </a>
+    </div>
+
+    <p class="fine-print">
+      Giftcards can be used with other discount codes.<br>
+      Always check retailer: <a href="#">Terms &amp; Conditions ↗</a>
+    </p>
+
+    <button class="cta-btn" onclick="purchaseClick()">Purchase Securely</button>
+
+  </div><!-- /content -->
+
+  <!-- ── FAKE iOS NUMERIC KEYBOARD ── -->
+  <div class="fake-keyboard" id="fakeKeyboard">
+    <div class="keyboard-done-bar">
+      <button class="keyboard-done-btn" onclick="closeKeyboard()">Done</button>
+    </div>
+    <div class="keyboard-grid">
+      <button class="key" onclick="pressKey('1')">1</button>
+      <button class="key" onclick="pressKey('2')">2</button>
+      <button class="key" onclick="pressKey('3')">3</button>
+      <button class="key" onclick="pressKey('4')">4</button>
+      <button class="key" onclick="pressKey('5')">5</button>
+      <button class="key" onclick="pressKey('6')">6</button>
+      <button class="key" onclick="pressKey('7')">7</button>
+      <button class="key" onclick="pressKey('8')">8</button>
+      <button class="key" onclick="pressKey('9')">9</button>
+      <button class="key special" onclick="pressKey('.')">.</button>
+      <button class="key" onclick="pressKey('0')">0</button>
+      <button class="key special backspace" onclick="pressKey('⌫')">⌫</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       CHECKOUT — payment method bottom sheet
+  ════════════════════════════════════════ -->
+  <div class="checkout-backdrop" id="checkoutBackdrop" onclick="closeCheckout()"></div>
+
+  <div class="checkout-sheet" id="checkoutSheet">
+    <div class="sheet-handle"></div>
+
+    <h3 class="pay-heading">Choose Payment Method</h3>
+
+    <!-- Pay By Bank (selected, best saving) -->
+    <div class="pay-option selected" data-rate="15" onclick="selectPayment(this)">
+      <span class="best-tag">Best saving</span>
+      <div class="pay-icon">
+        <svg width="26" height="24" viewBox="0 0 26 24" fill="white">
+          <path d="M13 1L1 7v2h24V7L13 1z"/>
+          <rect x="3" y="11" width="3" height="8"/>
+          <rect x="9" y="11" width="3" height="8"/>
+          <rect x="14" y="11" width="3" height="8"/>
+          <rect x="20" y="11" width="3" height="8"/>
+          <rect x="1" y="20" width="24" height="3"/>
+        </svg>
+      </div>
+      <div class="pay-text">
+        <span class="pay-name">Pay By Bank</span>
+        <span class="pay-desc">Pay directly from your bank to deposit funds instantly</span>
+      </div>
+      <div class="pay-rate">15%</div>
+    </div>
+
+    <div class="or-divider"><span>OR</span></div>
+
+    <!-- Reduction note -->
+    <div class="pay-note">
+      <span class="pay-note-icon">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#14151B" stroke-width="2.5" stroke-linecap="round">
+          <line x1="12" y1="11" x2="12" y2="16"/>
+          <line x1="12" y1="7.5" x2="12.01" y2="7.5" stroke-width="3"/>
+        </svg>
+      </span>
+      <p>Please note that payment methods other than Bank Transfer receive a 1% reduction in discount.</p>
+    </div>
+
+    <!-- Pay with Card -->
+    <div class="pay-option" data-rate="14" onclick="selectPayment(this)">
+      <div class="pay-icon">
+        <svg width="28" height="20" viewBox="0 0 28 20" fill="none" stroke="white" stroke-width="2">
+          <rect x="1" y="1" width="26" height="18" rx="3"/>
+          <line x1="1" y1="6" x2="27" y2="6"/>
+        </svg>
+      </div>
+      <div class="pay-text">
+        <span class="pay-name">Pay with Card</span>
+      </div>
+      <div class="pay-rate">14%</div>
+    </div>
+
+    <!-- Pay with Google Pay -->
+    <div class="pay-option" data-rate="14" onclick="selectPayment(this)">
+      <div class="pay-icon gpay">
+        <span class="gpay-g">G</span><span class="gpay-pay">Pay</span>
+      </div>
+      <div class="pay-text">
+        <span class="pay-name">Pay with Google Pay</span>
+      </div>
+      <div class="pay-rate">14%</div>
+    </div>
+
+    <button class="proceed-btn">Proceed</button>
+  </div>
+
+</div><!-- /phone -->
+
+<script>
+  const RATE = 0.15;          // default / best (Pay By Bank)
+  let currentRate = RATE;     // updates with the chosen payment method
+  function fmt(n) { return '£' + n.toFixed(2); }
+
+  /* Re-render the gift card's savings rows for the current rate */
+  function renderSavings(val) {
+    const pct    = Math.round(currentRate * 100);
+    const saving = val * currentRate;
+    const total  = val - saving;
+    document.getElementById('mSavingLabel').textContent = 'You Save (' + pct + '%)';
+    document.getElementById('mSaving').textContent      = '−' + fmt(saving);
+    document.getElementById('mTotal').textContent       = fmt(total);
+  }
+
+  function updateCard(raw) {
+    const val = parseFloat(raw);
+    const emptyEl = document.getElementById('gcEmpty');
+    const mathEl  = document.getElementById('gcMathRows');
+
+    if (!raw || isNaN(val) || val <= 0) {
+      emptyEl.style.display = 'flex';
+      mathEl.style.display  = 'none';
+      return;
+    }
+    emptyEl.style.display = 'none';
+    mathEl.style.display  = 'block';
+    renderSavings(val);
+  }
+
+  function openKeyboard() {
+    document.getElementById('phone').classList.add('keyboard-open');
+    document.getElementById('amountInput').focus();
+  }
+
+  function closeKeyboard() {
+    document.getElementById('phone').classList.remove('keyboard-open');
+    document.getElementById('amountInput').blur();
+  }
+
+  /* ── Purchase Securely ── */
+  function purchaseClick() {
+    const val = parseFloat(document.getElementById('amountInput').value);
+    if (!val || isNaN(val) || val <= 0) {
+      // No value yet → open the keyboard to input one
+      openKeyboard();
+      return;
+    }
+    // Value entered → open checkout sheet (the gift card above shows the maths)
+    const phone = document.getElementById('phone');
+    phone.classList.remove('keyboard-open');
+    phone.classList.add('checkout-open');
+  }
+
+  function closeCheckout() {
+    document.getElementById('phone').classList.remove('checkout-open');
+    // Reset to the best rate (Pay By Bank) for the main view
+    const bank = document.querySelector('.pay-option[data-rate="15"]');
+    if (bank) selectPayment(bank);
+  }
+
+  /* Select a payment method — moves the blue border AND updates the
+     gift card preview (saving %, saving amount, total to pay). */
+  function selectPayment(el) {
+    document.querySelectorAll('.pay-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    currentRate = (parseFloat(el.dataset.rate) || 15) / 100;
+    const val = parseFloat(document.getElementById('amountInput').value);
+    if (val > 0) renderSavings(val);
+  }
+
+  function pressKey(val) {
+    const input = document.getElementById('amountInput');
+    if (val === '⌫') {
+      input.value = input.value.slice(0, -1);
+    } else if (val === '.' && input.value.includes('.')) {
+      return;
+    } else {
+      // prevent more than 2 decimal places
+      if (input.value.includes('.') && input.value.split('.')[1].length >= 2) return;
+      input.value += val;
+    }
+    updateCard(input.value);
+  }
+
+  // Animate key press
+  document.querySelectorAll('.key').forEach(k => {
+    k.addEventListener('mousedown', () => k.classList.add('pressed'));
+    k.addEventListener('mouseup',   () => k.classList.remove('pressed'));
+  });
+</script>
+
+</body>
+</html>
