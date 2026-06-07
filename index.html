@@ -221,6 +221,9 @@
     color: var(--white);
     line-height: 1.3;
     letter-spacing: -0.3px;
+    /* sits over the photo when the keyboard is up — dark halo keeps it
+       as legible as the main headline (same Barlow font, size & weight) */
+    text-shadow: 0 2px 10px rgba(0,0,0,0.9), 0 0 3px rgba(0,0,0,0.7);
   }
 
   /* ── Main headline (normal state) ── */
@@ -381,6 +384,32 @@
   .gc-divider { height: 1px; background: rgba(255,255,255,0.25); margin: 8px 0; }
   .gc-math-row.total .gc-math-label { font-size: 14px; font-weight: 800; color: white; }
   .gc-math-row.total .gc-math-value { font-size: 22px; font-weight: 900; color: white; letter-spacing: -0.8px; }
+
+  /* Credit available (empty state) + credit-used row */
+  .gc-credit-available .gc-math-value { color: #fff; font-weight: 800; }
+  .gc-credit-row .gc-math-label {
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .gc-credit-row .gc-math-value { color: #fff; font-weight: 800; }
+  .credit-btn {
+    border: 1px solid rgba(255,255,255,0.5);
+    background: rgba(255,255,255,0.12);
+    color: white;
+    font-family: 'Barlow', sans-serif;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.3px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    cursor: pointer;
+    line-height: 1.4;
+  }
+  .credit-btn:hover { background: rgba(255,255,255,0.22); }
+
+  .gc-remaining-row .gc-math-label,
+  .gc-remaining-row .gc-math-value {
+    font-size: 12px; font-weight: 600;
+    color: rgba(255,255,255,0.7);
+  }
 
   /* ── Info links ── */
   .info-links {
@@ -702,6 +731,133 @@
     font-size: 16px; font-weight: 800; color: white;
     cursor: pointer; margin-top: 2px;
   }
+
+  /* Nothing to pay → grey out & disable the payment methods
+     (Proceed stays active). */
+  .no-payment-due .pay-option {
+    background: rgba(255,255,255,0.16);
+    pointer-events: none;
+    border-color: transparent !important;
+  }
+  .no-payment-due .pay-option .pay-name { color: rgba(255,255,255,0.5); }
+  .no-payment-due .pay-option .pay-desc { color: rgba(255,255,255,0.35); }
+  .no-payment-due .pay-option .pay-icon { opacity: 0.45; }
+  .no-payment-due .pay-option .pay-rate,
+  .no-payment-due .pay-option .best-tag { display: none; }
+  .no-payment-due .or-divider { opacity: 0.5; }
+
+  /* ══════════════════════════════════════════
+     FLOATING CONTROL PANEL (draggable, minimisable)
+     — standalone, does not affect the phone yet
+  ══════════════════════════════════════════ */
+  .control-panel {
+    position: fixed;
+    top: 40px;
+    right: 40px;
+    z-index: 1000;
+    width: 248px;
+    background: #16181F;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    box-shadow: 0 18px 50px rgba(0,0,0,0.55);
+    font-family: 'Barlow', sans-serif;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  .panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 11px 14px;
+    background: linear-gradient(120deg, #FF4D7A, #FF8C42);
+    cursor: grab;
+  }
+  .panel-header:active { cursor: grabbing; }
+
+  .panel-title {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 14px; font-weight: 800; color: white;
+    letter-spacing: -0.2px;
+  }
+  .panel-grip {
+    display: grid;
+    grid-template-columns: repeat(2, 3px);
+    gap: 3px;
+  }
+  .panel-grip span {
+    width: 3px; height: 3px; border-radius: 50%;
+    background: rgba(255,255,255,0.7);
+  }
+
+  .panel-min-btn {
+    width: 24px; height: 24px;
+    border: none; border-radius: 7px;
+    background: rgba(255,255,255,0.22);
+    color: white; font-size: 16px; font-weight: 800;
+    line-height: 1; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .panel-min-btn:hover { background: rgba(255,255,255,0.34); }
+
+  .panel-body {
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .control-panel.minimised .panel-body { display: none; }
+
+  /* Credit input */
+  .panel-field { display: flex; flex-direction: column; gap: 6px; }
+  .panel-label {
+    font-size: 12px; font-weight: 700;
+    color: rgba(255,255,255,0.55);
+    text-transform: uppercase; letter-spacing: 0.6px;
+  }
+  .panel-input-wrap {
+    display: flex; align-items: center; gap: 4px;
+    background: #0C0D13;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    padding: 9px 12px;
+  }
+  .panel-input-wrap .cur { font-size: 15px; font-weight: 800; color: white; }
+  .panel-input-wrap input {
+    flex: 1; width: 100%;
+    background: transparent; border: none; outline: none;
+    font-family: 'Barlow', sans-serif;
+    font-size: 15px; font-weight: 700; color: white;
+    -moz-appearance: textfield;
+  }
+  .panel-input-wrap input::-webkit-inner-spin-button,
+  .panel-input-wrap input::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+  /* Toggle rows */
+  .panel-toggle-row {
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .panel-toggle-label { font-size: 14px; font-weight: 700; color: white; }
+
+  .toggle-switch { position: relative; width: 46px; height: 27px; flex-shrink: 0; }
+  .toggle-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+  .toggle-track {
+    position: absolute; inset: 0;
+    background: #3A3B40; border-radius: 14px;
+    cursor: pointer; transition: background 0.2s;
+  }
+  .toggle-track::before {
+    content: ''; position: absolute;
+    width: 21px; height: 21px; left: 3px; top: 3px;
+    background: white; border-radius: 50%;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+  .toggle-switch input:checked + .toggle-track { background: #4ADE80; }
+  .toggle-switch input:checked + .toggle-track::before { transform: translateX(19px); }
+
+  /* Unbold everything — normal weight across the whole UI */
+  * { font-weight: 400 !important; }
 </style>
 </head>
 <body>
@@ -818,10 +974,9 @@
             <input
               class="gc-inline-input"
               id="amountInput"
-              type="number"
+              type="text"
               inputmode="decimal"
               placeholder="0.00"
-              min="1" max="500" step="1"
               readonly
               onclick="openKeyboard()"
             >
@@ -831,6 +986,11 @@
 
         <div class="gc-math">
           <hr class="gc-stub-divider">
+          <!-- Empty state: credit available (when Credit On) + hint -->
+          <div class="gc-math-row gc-credit-available" id="gcCreditAvailable" style="display:none">
+            <span class="gc-math-label">Credit Available</span>
+            <span class="gc-math-value" id="gcCreditAvailableVal">£5.00</span>
+          </div>
           <div class="gc-empty-hint" id="gcEmpty">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="10"/>
@@ -839,7 +999,19 @@
             </svg>
             Tap the amount to preview your savings
           </div>
+          <!-- Filled state -->
           <div id="gcMathRows" style="display:none">
+            <div class="gc-math-row gc-credit-row" id="mCreditRow" style="display:none">
+              <span class="gc-math-label">
+                <span id="mCreditLabel">Credit Used</span>
+                <button class="credit-btn" id="creditToggleBtn">Remove</button>
+              </span>
+              <span class="gc-math-value" id="mCredit">£0.00</span>
+            </div>
+            <div class="gc-math-row gc-remaining-row" id="mRemainingRow" style="display:none">
+              <span class="gc-math-label">Remaining Credit</span>
+              <span class="gc-math-value" id="mRemaining">£0.00</span>
+            </div>
             <div class="gc-math-row">
               <span class="gc-math-label" id="mSavingLabel">You Save (15%)</span>
               <span class="gc-math-value saving" id="mSaving">−£0.00</span>
@@ -977,35 +1149,153 @@
 
 </div><!-- /phone -->
 
+<!-- ════════════════════════════════════════
+     FLOATING CONTROL PANEL (standalone)
+════════════════════════════════════════ -->
+<div class="control-panel" id="controlPanel">
+  <div class="panel-header" id="panelHeader">
+    <span class="panel-title">
+      <span class="panel-grip"><span></span><span></span><span></span><span></span><span></span><span></span></span>
+      Controls
+    </span>
+    <button class="panel-min-btn" id="panelMinBtn" title="Minimise">−</button>
+  </div>
+  <div class="panel-body">
+    <div class="panel-field">
+      <label class="panel-label" for="creditInput">Credit</label>
+      <div class="panel-input-wrap">
+        <span class="cur">£</span>
+        <input id="creditInput" type="number" inputmode="decimal" step="0.01" value="5">
+      </div>
+    </div>
+
+    <div class="panel-toggle-row">
+      <span class="panel-toggle-label">Credit On</span>
+      <label class="toggle-switch">
+        <input type="checkbox" id="creditOnToggle">
+        <span class="toggle-track"></span>
+      </label>
+    </div>
+
+    <div class="panel-toggle-row">
+      <span class="panel-toggle-label">Discount on Credit</span>
+      <label class="toggle-switch">
+        <input type="checkbox" id="discountOnCreditToggle">
+        <span class="toggle-track"></span>
+      </label>
+    </div>
+  </div>
+</div>
+
 <script>
   const RATE = 0.15;          // default / best (Pay By Bank)
   let currentRate = RATE;     // updates with the chosen payment method
   function fmt(n) { return '£' + n.toFixed(2); }
 
-  /* Re-render the gift card's savings rows for the current rate */
-  function renderSavings(val) {
-    const pct    = Math.round(currentRate * 100);
-    const saving = val * currentRate;
-    const total  = val - saving;
-    document.getElementById('mSavingLabel').textContent = 'You Save (' + pct + '%)';
-    document.getElementById('mSaving').textContent      = '−' + fmt(saving);
-    document.getElementById('mTotal').textContent       = fmt(total);
+  /* ── Credit state (driven by the control panel) ── */
+  let creditApplied = true;  // credit is applied by default
+
+  function creditState() {
+    const on  = document.getElementById('creditOnToggle').checked;
+    const amt = parseFloat(document.getElementById('creditInput').value) || 0;
+    const discountOnCredit = document.getElementById('discountOnCreditToggle').checked;
+    return { on, amt, discountOnCredit };
   }
 
-  function updateCard(raw) {
-    const val = parseFloat(raw);
-    const emptyEl = document.getElementById('gcEmpty');
-    const mathEl  = document.getElementById('gcMathRows');
+  /* Single source of truth: re-render the whole gift card preview from
+     the current amount, rate and control-panel credit settings. */
+  function renderGiftCard() {
+    const raw     = document.getElementById('amountInput').value;
+    const val     = parseFloat(raw);
+    const hasValue = raw && !isNaN(val) && val > 0;
 
-    if (!raw || isNaN(val) || val <= 0) {
-      emptyEl.style.display = 'flex';
+    const emptyEl   = document.getElementById('gcEmpty');
+    const mathEl    = document.getElementById('gcMathRows');
+    const credAvail = document.getElementById('gcCreditAvailable');
+    const { on: creditOn, amt: creditAmt, discountOnCredit } = creditState();
+
+    /* ---- Empty state (no gift card value) ---- */
+    if (!hasValue) {
       mathEl.style.display  = 'none';
+      emptyEl.style.display = 'flex';
+      document.getElementById('phone').classList.remove('no-payment-due');
+      if (creditOn && creditAmt > 0) {
+        credAvail.style.display = 'flex';
+        document.getElementById('gcCreditAvailableVal').textContent = fmt(creditAmt);
+      } else {
+        credAvail.style.display = 'none';
+      }
       return;
     }
-    emptyEl.style.display = 'none';
-    mathEl.style.display  = 'block';
-    renderSavings(val);
+
+    /* ---- Filled state ---- */
+    emptyEl.style.display   = 'none';
+    credAvail.style.display = 'none';
+    mathEl.style.display    = 'block';
+
+    const r   = currentRate;
+    const pct = Math.round(r * 100);
+
+    const useCredit = creditOn && creditApplied && creditAmt > 0;
+
+    // Discount on Credit ON  → credit also earns the discount, so it pays
+    //   toward the already-discounted price (face × (1 − r)). e.g. a £5 card
+    //   costs £4.25, so only £4.25 of credit is needed (£0.75 left over).
+    // Discount on Credit OFF → credit buys face value 1:1; the discount
+    //   applies only to the remaining cash-paid face value.
+    let creditUsed, cash;
+    if (discountOnCredit) {
+      const discountedPrice = val * (1 - r);
+      creditUsed = useCredit ? Math.min(creditAmt, discountedPrice) : 0;
+      cash       = discountedPrice - creditUsed;
+    } else {
+      creditUsed = useCredit ? Math.min(creditAmt, val) : 0;
+      cash       = (val - creditUsed) * (1 - r);
+    }
+
+    const remaining = Math.max(0, creditAmt - creditUsed);
+    const total     = Math.max(0, cash);
+    const youSave   = val - total;   // = discount + credit used
+
+    // Hide the % only when credit is actually applied (saving then includes
+    // credit, so the % no longer matches). If credit is removed/unavailable,
+    // the % is accurate again, so show it.
+    document.getElementById('mSavingLabel').textContent =
+      useCredit ? 'You Save' : ('You Save (' + pct + '%)');
+    document.getElementById('mSaving').textContent      = '−' + fmt(youSave);
+    document.getElementById('mTotal').textContent       = fmt(total);
+
+    // Nothing left to pay → grey out the checkout payment options
+    document.getElementById('phone').classList.toggle('no-payment-due', total <= 0);
+
+    // Credit + remaining rows (only when Credit On and an amount is set)
+    const creditRow    = document.getElementById('mCreditRow');
+    const remainingRow = document.getElementById('mRemainingRow');
+    if (creditOn && creditAmt > 0) {
+      creditRow.style.display = 'flex';
+      const label = document.getElementById('mCreditLabel');
+      const valEl = document.getElementById('mCredit');
+      const btn   = document.getElementById('creditToggleBtn');
+      if (creditApplied) {
+        label.textContent = 'Credit Used';
+        valEl.textContent = fmt(creditUsed);   // folded into savings, shown as info (no minus)
+        btn.textContent   = 'Remove';
+        remainingRow.style.display = 'flex';
+        document.getElementById('mRemaining').textContent = fmt(remaining);
+      } else {
+        label.textContent = 'Credit Available';
+        valEl.textContent = fmt(creditAmt);
+        btn.textContent   = 'Apply';
+        remainingRow.style.display = 'none';
+      }
+    } else {
+      creditRow.style.display = 'none';
+      remainingRow.style.display = 'none';
+    }
   }
+
+  // Keep the old name working (input calls updateCard)
+  function updateCard() { renderGiftCard(); }
 
   function openKeyboard() {
     document.getElementById('phone').classList.add('keyboard-open');
@@ -1044,8 +1334,7 @@
     document.querySelectorAll('.pay-option').forEach(o => o.classList.remove('selected'));
     el.classList.add('selected');
     currentRate = (parseFloat(el.dataset.rate) || 15) / 100;
-    const val = parseFloat(document.getElementById('amountInput').value);
-    if (val > 0) renderSavings(val);
+    renderGiftCard();
   }
 
   function pressKey(val) {
@@ -1067,6 +1356,85 @@
     k.addEventListener('mousedown', () => k.classList.add('pressed'));
     k.addEventListener('mouseup',   () => k.classList.remove('pressed'));
   });
+
+  /* ── Floating control panel: drag + minimise (standalone) ── */
+  (function () {
+    const panel  = document.getElementById('controlPanel');
+    const header = document.getElementById('panelHeader');
+    const minBtn = document.getElementById('panelMinBtn');
+    let dragging = false, offX = 0, offY = 0;
+
+    function startDrag(clientX, clientY, e) {
+      if (e && e.target.closest('.panel-min-btn')) return; // don't drag from the button
+      dragging = true;
+      const r = panel.getBoundingClientRect();
+      // switch from right-anchored to left/top so dragging is absolute
+      panel.style.left  = r.left + 'px';
+      panel.style.top   = r.top + 'px';
+      panel.style.right = 'auto';
+      offX = clientX - r.left;
+      offY = clientY - r.top;
+    }
+
+    function moveDrag(clientX, clientY) {
+      if (!dragging) return;
+      const w = panel.offsetWidth, h = panel.offsetHeight;
+      let left = clientX - offX;
+      let top  = clientY - offY;
+      // keep within the viewport
+      left = Math.max(0, Math.min(left, window.innerWidth  - w));
+      top  = Math.max(0, Math.min(top,  window.innerHeight - h));
+      panel.style.left = left + 'px';
+      panel.style.top  = top + 'px';
+    }
+
+    function endDrag() { dragging = false; }
+
+    // Mouse
+    header.addEventListener('mousedown', e => { startDrag(e.clientX, e.clientY, e); });
+    window.addEventListener('mousemove', e => moveDrag(e.clientX, e.clientY));
+    window.addEventListener('mouseup', endDrag);
+    // Touch
+    header.addEventListener('touchstart', e => {
+      const t = e.touches[0]; startDrag(t.clientX, t.clientY, e);
+    }, { passive: true });
+    window.addEventListener('touchmove', e => {
+      if (!dragging) return;
+      const t = e.touches[0]; moveDrag(t.clientX, t.clientY); e.preventDefault();
+    }, { passive: false });
+    window.addEventListener('touchend', endDrag);
+
+    // Minimise / expand
+    minBtn.addEventListener('click', () => {
+      const min = panel.classList.toggle('minimised');
+      minBtn.textContent = min ? '+' : '−';
+      minBtn.title = min ? 'Expand' : 'Minimise';
+    });
+  })();
+
+  /* ── Control panel → gift card wiring ── */
+  (function () {
+    const creditOn   = document.getElementById('creditOnToggle');
+    const creditAmt  = document.getElementById('creditInput');
+    const discCredit = document.getElementById('discountOnCreditToggle');
+    const removeBtn  = document.getElementById('creditToggleBtn');
+
+    // Re-apply credit by default whenever Credit On is switched on
+    creditOn.addEventListener('change', () => {
+      if (creditOn.checked) creditApplied = true;
+      renderGiftCard();
+    });
+    creditAmt.addEventListener('input', renderGiftCard);
+    discCredit.addEventListener('change', renderGiftCard);
+
+    // Remove / Apply credit
+    removeBtn.addEventListener('click', () => {
+      creditApplied = !creditApplied;
+      renderGiftCard();
+    });
+
+    renderGiftCard(); // initial sync
+  })();
 </script>
 
 </body>
